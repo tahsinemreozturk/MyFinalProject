@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace DataAccess.Concrete.EntityFramework
 {
     //Context : Veritabani tablolari ile classlari iliskilendiridigimiz class    
-    //DbCntext : Entityframewprk ile gelen Context islemini yapan 
+    //DbCntext : Entityframework ile gelen Context islemini yapan 
     public class NorthwindContext:DbContext
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
