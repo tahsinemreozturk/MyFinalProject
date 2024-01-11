@@ -1,8 +1,10 @@
 ﻿using Business.Abstract;
+using Business.CCS;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofact.Validation;
 using Core.CrossCuttingConcerns.Validation;
+using Core.Utilities.Business;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
@@ -20,18 +22,44 @@ namespace Business.Concrete
     public class ProductManager : IProductService
     {
         IProductDal  _productDal;
+        ICategoryService _categoryService;
+        
 
-        public ProductManager(IProductDal productDal)
+        public ProductManager(IProductDal productDal, ICategoryService categoryService)
         {
-            _productDal = productDal;
+            _productDal = productDal;   
+            _categoryService = categoryService; 
         }
 
         [ValidationAspect(typeof(ProductValidator))]
         public IResult Add(Product product)
         {
-            _productDal.Add(product);
+            //Aşağıdaki iş kuralı kodunda kötü kod örneği yaptık. Burada yazmamamız gerekiyor.
+            //var result = _productDal.GetAll(p => p.CategoryId == product.CategoryId).Count;
+            //if (result >= 10) 
+            //{
+            //    return new ErrorResult();
+            //}
 
+            IResult result = BusinessRules.Run(CheckIfProductCountOfCategoryCorrect(product.CategoryId),
+                CheckIfProductNameExists(product.ProductName),CheckIfCategoryLimitExceded());
+            if (result != null)
+            {
+                return result;
+            }
+            _productDal.Add(product);
             return new SuccessResult(Messages.ProductAdded);
+
+            //if (CheckIfProductCountOfCategoryCorrect(product.CategoryId).Success)
+            //{
+            //    if (CheckIfProductNameExists(product.ProductName).Success)
+            //    {
+            //        _productDal.Add(product);
+
+            //        return new SuccessResult(Messages.ProductAdded);
+            //    } 
+            //}
+            //return new ErrorResult();    
         }
 
         public IDataResult<List<Product>> GetAll()
@@ -63,5 +91,46 @@ namespace Business.Concrete
         {
             return new SuccessDataResult<List<ProductDetailDto>> (_productDal.GetProductDetails());
         }
+
+        private IResult CheckIfProductCountOfCategoryCorrect(int categoryId)
+        {
+            //Burada yukarıdaki yaptığımız hatayı düzeltiyoruz. Böyle ayrı bir metot tanımlayıp kullanacağız.
+            //Private olmasina dikkat ediyoruz.
+            var result = _productDal.GetAll(p => p.CategoryId == categoryId).Count;
+            if (result >= 10)
+            {
+                return new ErrorResult();
+            }
+            return new SuccessResult();
+
+        }
+
+        private IResult CheckIfProductNameExists(string productName)
+        {
+            
+            var result = _productDal.GetAll(p => p.ProductName == productName).Any();
+            if (result)
+            {
+                return new ErrorResult();
+            }
+            return new SuccessResult();
+
+        }
+
+        
+        private IResult CheckIfCategoryLimitExceded()
+        {
+
+            var result = _categoryService.GetAll();
+            if (result.Data.Count>15)
+            {
+                return new ErrorResult();
+            }
+            return new SuccessResult();
+
+        }
+
+
+
     }
 }

@@ -17,6 +17,9 @@ namespace Business.ValidationRules.FluentValidation
             RuleFor(p => p.UnitPrice).NotEmpty();
             RuleFor(p => p.UnitPrice).GreaterThan(0);
             RuleFor(p => p.UnitPrice).GreaterThanOrEqualTo(10).When(p => p.CategoryId == 1);
+            RuleFor(p => p.ProductId).LessThanOrEqualTo(10);
+
+    
 
             //Asagidaki kod ile kendi ozel durumumuzu belirleyebiliyoruz
             RuleFor(p => p.ProductName).Must(StarWithA).WithMessage("Urunler A harfi ile baslamali");
