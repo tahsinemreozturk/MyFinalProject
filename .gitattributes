@@ -1,4 +1,4 @@
-*.csharp linguist-detectable=true
+*.cs linguist-language=C#
 
 *.java linguist-detectable=false
 
@@ -8,4 +8,4 @@
 
 *.xml linguist-detectable=false
 
-*.t-sql linguist-detectable=false
+*.tsql linguist-detectable=false
