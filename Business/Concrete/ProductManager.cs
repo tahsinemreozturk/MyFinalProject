@@ -3,6 +3,9 @@ using Business.BussinesAspects.Autofac;
 using Business.CCS;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofact.Caching;
+using Core.Aspects.Autofact.Performance;
+using Core.Aspects.Autofact.Transaction;
 using Core.Aspects.Autofact.Validation;
 using Core.CrossCuttingConcerns.Validation;
 using Core.Utilities.Business;
@@ -34,6 +37,7 @@ namespace Business.Concrete
 
         [SecuredOperation("product.add,admin")]
         [ValidationAspect(typeof(ProductValidator))]
+        [CacheRemoveAspect("IProductService.Get")]
         public IResult Add(Product product)
         {
             //Aşağıdaki iş kuralı kodunda kötü kod örneği yaptık. Burada yazmamamız gerekiyor.
@@ -63,7 +67,19 @@ namespace Business.Concrete
             //}
             //return new ErrorResult();    
         }
+        [ValidationAspect(typeof(ProductValidator))]
+        [CacheRemoveAspect("IProductService.Get")]
+        public IResult Update(Product product)
+        {
+            var result = _productDal.GetAll(p => p.CategoryId == product.CategoryId).Count;
+            if (result >= 10)
+            {
+                return new ErrorResult(Messages.ProductCountOfCategoryError);
+            }
+            throw new NotImplementedException();
+        }
 
+        [CacheAspect]
         public IDataResult<List<Product>> GetAll()
         {
             //is kodlari
@@ -79,6 +95,8 @@ namespace Business.Concrete
             return new SuccessDataResult<List<Product>> (_productDal.GetAll(p => p.CategoryId == id));
         }
 
+        [CacheAspect]
+        [PerformanceAspect(5)]
         public IDataResult<Product> GetById(int productId)
         {
             return new SuccessDataResult<Product> (_productDal.Get(p=> p.ProductId == productId));
@@ -132,7 +150,10 @@ namespace Business.Concrete
 
         }
 
-
-
+        [TransactionScopeAspect]
+        public IResult AddTransactionalTest(Product product)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

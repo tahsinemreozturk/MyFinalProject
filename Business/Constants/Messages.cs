@@ -20,7 +20,7 @@ namespace Business.Constants
         public static string UserAlreadyExists = "Bu kullanıcı zaten var";
         public static string AccessTokenCreated = "Erişim tokeni oluşturuldu";
         public static string UserNotFound = "Kullanıcı bulunamadı";
-
+        public static string ProductCountOfCategoryError = "Urun kategori sayisi hatasi";
 
     }
 }

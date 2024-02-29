@@ -4,6 +4,8 @@ using Autofac.Extensions.DependencyInjection;
 using Business.Abstract;
 using Business.Concrete;
 using Business.DependencyResolvers.Autofac;
+using Core.DependencyResolvers;
+using Core.Extensions;
 using Core.Utilities.IoC;
 using Core.Utilities.Security.Encryption;
 using Core.Utilities.Security.JWT;
@@ -23,6 +25,7 @@ builder.Host.ConfigureContainer<ContainerBuilder>(options =>
 });
 
 //auth
+//builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 var tokenOptions = builder.Configuration.GetSection("TokenOptions").Get<Core.Utilities.Security.JWT.TokenOptions>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -40,9 +43,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     };
                 });
 
+builder.Services.AddDependencyResolvers(new ICoreModule[] { new CoreModule() });
+
 // Add services to the container.
 
 builder.Services.AddControllers();
+
 
 //builder.Services.AddScoped<IProductDal, EfProductDal>(); //Bu bloktaki anlam. ilk eleman olan IProductDal`i bírisi isterse arka planda EfProductDal`i olustur ve ona ver demektir.
 //builder.Services.AddScoped<IProductService, ProductManager>();
