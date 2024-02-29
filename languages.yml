@@ -1,0 +1,4 @@
+# .github/workflows/languages.yml
+
+csharp:
+  - '*.cs'
