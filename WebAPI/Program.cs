@@ -48,6 +48,7 @@ builder.Services.AddDependencyResolvers(new ICoreModule[] { new CoreModule() });
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddCors();
 
 
 //builder.Services.AddScoped<IProductDal, EfProductDal>(); //Bu bloktaki anlam. ilk eleman olan IProductDal`i bírisi isterse arka planda EfProductDal`i olustur ve ona ver demektir.
@@ -68,6 +69,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors(builder=>builder.WithOrigins("http://localhost:4200").AllowAnyHeader());
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
@@ -75,5 +78,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
+ 
 app.Run();
