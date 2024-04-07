@@ -15,7 +15,7 @@ namespace DataAccess.Concrete.EntityFramework
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Server=(localdb)\projectmodels;Database=master;Trusted_Connection=true");
+            optionsBuilder.UseSqlServer(@"Server=DESKTOP-8U30TCM;Database=DBFinalProject;Trusted_Connection=true");
         }
         //DESKTOP-5UL5PTI\Bestf
         public DbSet<Product> Products { get; set; }
